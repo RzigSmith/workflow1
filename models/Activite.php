@@ -1,9 +1,11 @@
 <?php
 
-
+require_once __DIR__ . '/../core/Model.php';
 class Activite extends Model {
+    private $table = "activite";
+
     public function creer($data) {
-        $sql = "INSERT INTO activite 
+        $sql = "INSERT INTO $this->table
                 (libelle, description, priorite, date_activite, heure_debut, heure_fin, id_etat, id_user)
                 values 
                 (:libelle, :description, :priorite, :date_activite, :heure_debut, :heure_fin, :id_etat, :id_user)";
@@ -16,8 +18,8 @@ class Activite extends Model {
             ':date_activite' => $data['date_activite'],
             ':heure_debut' => $data['heure_debut'],
             ':heure_fin' => $data['heure_fin'],
-            ':etat' => $data['id_etat'],
-            ':user' => $data['id_user']
+            ':id_etat' => $data['id_etat'],
+            ':id_user' => $data['id_user']
         ]);
     }
 

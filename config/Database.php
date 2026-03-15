@@ -3,15 +3,20 @@
 
 class Database {
     private static $instance = null;
-    private $connection;
+    private $conn;
 
     private function __construct() {
-        $this->connection = new PDO(
-            "mysql:host=loclhost;dbname=workflow;charset=utf8",
-            "root",
-            ""
-        );
-        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        try {
+            $this->conn = new PDO(
+                "mysql:host=localhost;dbname=workflow;charset=utf8",
+                "root",
+                ""
+            );
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            // Rethrow to allow global exception handler to present a clean error.
+            throw new RuntimeException('Impossible de se connecter à la base de données. ' . $e->getMessage(), 0, $e);
+        }
     }
 
     public static function getInstance() {
@@ -21,7 +26,7 @@ class Database {
         return self::$instance;
     }
 
-    public function getConnection() {
-        return $this->connection;
+    public function getconn() {
+        return $this->conn;
     }
 }
