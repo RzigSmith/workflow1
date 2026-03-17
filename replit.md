@@ -29,9 +29,32 @@ The workflow runs: `php -S 0.0.0.0:5000 -t public/`
 
 Originally MySQL (`workflow` database), converted to SQLite for Replit compatibility. The database is auto-created at startup with seeded reference data (roles, etats, type_notifications).
 
+## Frontend Assets
+
+- `public/assets/css/style.css` — Design system complet (variables CSS, layout sidebar, cartes, badges, toasts, modals, animations, responsive)
+- `public/assets/js/app.js` — JavaScript pour la fluidité : navigation SPA (sections sans rechargement), barre de progression, toasts de notification, toggle mot de passe, états de chargement des formulaires, sidebar mobile, gestion des confirmations
+
+## UI / Navigation
+
+- **Routing SPA** : le dashboard utilise des sections (`data-section`) commutées côté client — navigation fluide sans rechargement de page
+- **Toasts** : les messages flash sont affichés en notifications animées en bas à droite
+- **Barre de progression** : animation de chargement sur chaque navigation de section
+- **Sidebar responsive** : fixe sur desktop, drawer mobile avec overlay
+
+## Routing
+
+- `/?page=login` — page connexion
+- `/?page=register` — page inscription
+- `/?page=dashboard` — tableau de bord (requiert session)
+- `/?action=login` (POST) — traitement connexion
+- `/?action=register` (POST) — traitement inscription
+- `/?action=logout` — déconnexion
+- `/?action=creer-activite` (POST) — création d'activité
+
 ## Key Notes
 
 - Session-based authentication
 - Passwords hashed with `password_hash()`
 - Flash messages via `core/Flash.php`
-- `getConn()` is the canonical method name on the `Database` class (PHP method names are case-insensitive, so `getconn()` and `getConn()` are equivalent)
+- `getConn()` is the canonical method name on the `Database` class (PHP method names are case-insensitive)
+- All redirects go through `index.php` — never direct view access

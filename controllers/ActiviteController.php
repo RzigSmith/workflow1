@@ -15,7 +15,7 @@ class ActiviteController {
 
                 if (empty($_SESSION['user_id'])) {
                     set_flash('error', 'Vous devez être connecté pour créer une activité.');
-                    header('Location: ../views/login.php');
+                    header('Location: /?page=login');
                     exit;
                 }
 
@@ -48,11 +48,11 @@ class ActiviteController {
                 $notification->creer();
 
                 set_flash('success', 'Activité créée avec succès.');
-                header('Location: ../views/dashboard.php');
+                header('Location: /?page=dashboard');
                 exit;
             } catch (Throwable $e) {
                 set_flash('error', 'Impossible de créer l\'activité.' . (defined('DEBUG') && DEBUG ? ' ' . $e->getMessage() : ''));
-                header('Location: ../views/dashboard.php');
+                header('Location: /?page=dashboard');
                 exit;
             }
         }

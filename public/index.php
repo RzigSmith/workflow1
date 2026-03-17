@@ -31,8 +31,7 @@ function handle_exception(Throwable $e): void
 
     set_flash('error', $message);
 
-    // Redirect to the login page if no other context is available.
-    header('Location: ../views/login.php');
+    header('Location: /?page=login');
     exit;
 }
 
@@ -57,14 +56,19 @@ if ($action === 'logout') {
     exit;
 }
 
+if ($action === 'creer-activite') {
+    (new ActiviteController())->creer();
+    exit;
+}
+
 $page = $_GET['page'] ?? 'login';
 
 switch ($page) {
     case 'dashboard':
         require '../views/dashboard.php';
         break;
-    case 'creer-activite':
-        (new ActiviteController())->creer();
+    case 'register':
+        require '../views/register.php';
         break;
     default:
         require '../views/login.php';
