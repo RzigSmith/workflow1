@@ -85,6 +85,11 @@ class AuthController
 
                 $user->create();
 
+                // Générer un username automatique
+                $db     = Database::getInstance()->getConn();
+                $newId  = (int) $db->lastInsertId();
+                $user->setUsername($newId, $user->generateUsername($nom, $prenom));
+
                 set_flash('success', 'Compte créé avec succès. Vous pouvez maintenant vous connecter.');
                 header('Location: /?page=login');
                 exit;

@@ -52,4 +52,32 @@ class Utilisateur extends Model {
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([":id"=>$id]);
     }
- }
+
+    public function searchByName(string $q, int $excludeId): array {
+        $term = '%' . $q . '%';
+        $sql = "SELECT id_user, nom, prenom, username FROM {$this->table}
+                WHERE id_user != :excl
+                  AND (nom LIKE :q OR prenom LIKE :q2 OR username LIKE :q3
+                       OR (nom || ' ' || prenom) LIKE :q4)
+                ORDER BY nom ASC
+                LIMIT 15";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':excl'=>$excludeId, ':q'=>$term, ':q2'=>$term, ':q3'=>$term, ':q4'=>$term]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function setUsername(int $id, string $username): void {
+        $stmt = $this->db->prepare("UPDATE {$this->table} SET username=:u WHERE id_user=:id");
+        $stmt->execute([':u'=>$username, ':id'=>$id]);
+    }
+
+    public function generateUsername(string $nom, string $prenom): string {
+        $base = strtolower(
+            preg_replace('/[^a-z0-9]/', '', iconv('UTF-8','ASCII//TRANSLIT', $nom . '.' . $prenom))
+        );
+        $base = preg_replace('/\.+/', '.', trim($base, '.'));
+        $base = $base ?: 'user';
+        $suffix = rand(10, 999);
+        return $base . $suffix;
+    }
+}

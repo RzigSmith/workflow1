@@ -13,7 +13,7 @@ A French-language PHP 8.2 web application for managing tasks/activities (activit
 
 ```
 config/         - Database configuration (SQLite PDO)
-controllers/    - AuthController, ActiviteController, MessageController
+controllers/    - AuthController, ActiviteController, ApiController
 core/           - Base Controller, Model, Flash helper
 models/         - Activite, Utilisateur, Role, Etat, Notification, etc.
 public/         - Entry point (index.php), web root
@@ -50,6 +50,33 @@ Originally MySQL (`workflow` database), converted to SQLite for Replit compatibi
 - `/?action=register` (POST) — traitement inscription
 - `/?action=logout` — déconnexion
 - `/?action=creer-activite` (POST) — création d'activité
+- `/?action=api&endpoint=<name>` — API JSON pour les fonctionnalités sociales
+
+## Social Features (v2)
+
+### Base de données (tables ajoutées)
+- `amis` — demandes d'amitié (pending / accepted / declined), UNIQUE(u1,u2)
+- `post` — publications/blog avec visibilité (amis/public) et lien optionnel vers activite
+- `chat_message` — messages de chat par conversation
+- `conversation_membre` — membres de chaque conversation
+- `utilisateur.username` — identifiant public (auto-généré à l'inscription)
+
+### API JSON (/?action=api&endpoint=...)
+- `search-users?q=` — recherche utilisateurs par nom/username
+- `add-friend` POST — envoyer demande d'ami
+- `friend-respond` POST — accepter/refuser demande
+- `remove-friend` POST — retirer un ami
+- `start-conversation` POST — ouvrir/créer conversation DM
+- `get-conversations` — liste des conversations de l'utilisateur
+- `get-messages?conv_id=&last_id=` — messages (polling, since last_id)
+- `send-message` POST — envoyer message
+- `create-post` POST — créer publication/blog
+- `delete-post` POST — supprimer sa propre publication
+- `get-feed` — fil d'actualité (ses posts + posts des amis)
+
+### Fichiers JS
+- `public/assets/js/app.js` — navigation SPA, toasts, modals, progress bar
+- `public/assets/js/social.js` — FriendSearch, Social, Feed, Chat (polling toutes 2.5s)
 
 ## Key Notes
 

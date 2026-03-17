@@ -61,6 +61,12 @@ if ($action === 'creer-activite') {
     exit;
 }
 
+if ($action === 'api') {
+    $endpoint = $_GET['endpoint'] ?? '';
+    (new ApiController())->handle($endpoint);
+    exit;
+}
+
 $page = $_GET['page'] ?? 'login';
 
 switch ($page) {
