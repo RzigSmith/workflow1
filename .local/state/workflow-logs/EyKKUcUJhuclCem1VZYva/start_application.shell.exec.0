@@ -1,0 +1,13 @@
+[Tue Mar 17 21:15:23 2026] PHP 8.2.23 Development Server (http://0.0.0.0:5000) started
+[Tue Mar 17 21:15:27 2026] 172.31.121.162:44560 Accepted
+[Tue Mar 17 21:15:27 2026] 172.31.121.162:44560 [200]: GET / - Cannot redeclare Database::getconn() in /home/runner/workspace/config/Database.php on line 30
+[Tue Mar 17 21:15:27 2026] 172.31.121.162:44560 Closing
+[Tue Mar 17 21:15:28 2026] 172.31.121.162:44574 Accepted
+[Tue Mar 17 21:15:28 2026] 172.31.121.162:44574 [200]: GET / - Cannot redeclare Database::getconn() in /home/runner/workspace/config/Database.php on line 30
+[Tue Mar 17 21:15:28 2026] 172.31.121.162:44574 Closing
+[Tue Mar 17 21:15:29 2026] 127.0.0.1:52578 Accepted
+[Tue Mar 17 21:15:29 2026] 127.0.0.1:52578 [200]: GET / - Cannot redeclare Database::getconn() in /home/runner/workspace/config/Database.php on line 30
+[Tue Mar 17 21:15:29 2026] 127.0.0.1:52578 Closing
+[Tue Mar 17 21:15:33 2026] 127.0.0.1:60804 Accepted
+[Tue Mar 17 21:15:33 2026] 127.0.0.1:60804 [404]: GET /favicon.ico - No such file or directory
+[Tue Mar 17 21:15:33 2026] 127.0.0.1:60804 Closing

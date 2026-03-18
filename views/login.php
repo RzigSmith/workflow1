@@ -26,7 +26,7 @@ ob_start();
   </div>
 <?php endif; ?>
 
-<form method="POST" action="/?action=login" novalidate>
+<form method="POST" action="../public/index.php?action=login" novalidate>
 
   <div class="form-group">
     <label for="email">Adresse email</label>
@@ -57,7 +57,7 @@ ob_start();
 
 </form>
 
-<p class="auth-footer">Pas encore de compte ? <a href="/?page=register">S'inscrire</a></p>
+<p class="auth-footer">Pas encore de compte ? <a href="../views/register.php">S'inscrire</a></p>
 
 <?php clear_old(); ?>
 

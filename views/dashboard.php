@@ -6,7 +6,7 @@ require_once __DIR__ . '/../models/Activite.php';
 require_once __DIR__ . '/../models/Ami.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /?page=login');
+    header('Location: ../views/login.php');
     exit;
 }
 
@@ -43,7 +43,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
   <title>Tableau de bord – WorkFlow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="../public/assets/css/style.css">
 </head>
 <body>
 
@@ -128,7 +128,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
           <div class="user-role">Utilisateur</div>
         </div>
       </div>
-      <a href="/?action=logout" class="nav-item" style="margin-top:4px;" data-confirm="Voulez-vous vous déconnecter ?">
+      <a href="../public/index.php?action=logout" class="nav-item" style="margin-top:4px;" data-confirm="Voulez-vous vous déconnecter ?">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Déconnexion
       </a>
@@ -504,8 +504,8 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
   </div>
 </div>
 
-<script src="/assets/js/app.js"></script>
-<script src="/assets/js/social.js"></script>
+<script src="../public/assets/js/app.js"></script>
+<script src="../public/assets/js/social.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const flash = document.getElementById('flash-data');

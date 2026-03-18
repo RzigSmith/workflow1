@@ -1,0 +1,28 @@
+[Tue Mar 17 22:12:16 2026] PHP 8.2.23 Development Server (http://0.0.0.0:5000) started
+[Tue Mar 17 22:12:24 2026] 127.0.0.1:45082 Accepted
+[Tue Mar 17 22:12:24 2026] 127.0.0.1:45082 [200]: GET /
+[Tue Mar 17 22:12:24 2026] 127.0.0.1:45082 Closing
+[Tue Mar 17 22:12:25 2026] 127.0.0.1:45086 Accepted
+[Tue Mar 17 22:12:25 2026] 127.0.0.1:45086 [200]: GET /assets/css/style.css
+[Tue Mar 17 22:12:25 2026] 127.0.0.1:45086 Closing
+[Tue Mar 17 22:12:25 2026] 127.0.0.1:45098 Accepted
+[Tue Mar 17 22:12:25 2026] 127.0.0.1:45098 [200]: GET /assets/js/app.js
+[Tue Mar 17 22:12:25 2026] 127.0.0.1:45098 Closing
+[Tue Mar 17 22:14:00 2026] 127.0.0.1:55566 Accepted
+[Tue Mar 17 22:14:00 2026] 127.0.0.1:55566 [200]: GET /
+[Tue Mar 17 22:14:00 2026] 127.0.0.1:55566 Closing
+[Tue Mar 17 22:14:01 2026] 127.0.0.1:55574 Accepted
+[Tue Mar 17 22:14:01 2026] 127.0.0.1:55574 [200]: GET /assets/css/style.css
+[Tue Mar 17 22:14:01 2026] 127.0.0.1:55574 Closing
+[Tue Mar 17 22:14:01 2026] 127.0.0.1:59868 Accepted
+[Tue Mar 17 22:14:01 2026] 127.0.0.1:59868 [200]: GET /assets/js/app.js
+[Tue Mar 17 22:14:01 2026] 127.0.0.1:59868 Closing
+[Tue Mar 17 22:16:07 2026] 127.0.0.1:34664 Accepted
+[Tue Mar 17 22:16:07 2026] 127.0.0.1:34664 [200]: GET /
+[Tue Mar 17 22:16:07 2026] 127.0.0.1:34664 Closing
+[Tue Mar 17 22:16:07 2026] 127.0.0.1:34666 Accepted
+[Tue Mar 17 22:16:07 2026] 127.0.0.1:34666 [200]: GET /assets/css/style.css
+[Tue Mar 17 22:16:07 2026] 127.0.0.1:34666 Closing
+[Tue Mar 17 22:16:08 2026] 127.0.0.1:34672 Accepted
+[Tue Mar 17 22:16:08 2026] 127.0.0.1:34672 [200]: GET /assets/js/app.js
+[Tue Mar 17 22:16:08 2026] 127.0.0.1:34672 Closing

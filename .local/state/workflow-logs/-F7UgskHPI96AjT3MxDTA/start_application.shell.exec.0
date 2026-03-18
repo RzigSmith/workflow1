@@ -1,0 +1,73 @@
+[Tue Mar 17 21:47:03 2026] PHP 8.2.23 Development Server (http://0.0.0.0:5000) started
+[Tue Mar 17 21:47:03 2026] 127.0.0.1:33558 Accepted
+[Tue Mar 17 21:47:03 2026] 127.0.0.1:33558 [200]: GET /
+[Tue Mar 17 21:47:03 2026] 127.0.0.1:33558 Closing
+[Tue Mar 17 21:47:06 2026] 172.31.121.162:51268 Accepted
+[Tue Mar 17 21:47:06 2026] 172.31.121.162:51268 [200]: GET /
+[Tue Mar 17 21:47:06 2026] 172.31.121.162:51268 Closing
+[Tue Mar 17 21:47:06 2026] 172.31.121.162:51274 Accepted
+[Tue Mar 17 21:47:06 2026] 172.31.121.162:51274 [200]: GET /assets/css/style.css
+[Tue Mar 17 21:47:06 2026] 172.31.121.162:51274 Closing
+[Tue Mar 17 21:47:06 2026] 172.31.121.162:51282 Accepted
+[Tue Mar 17 21:47:06 2026] 172.31.121.162:51282 [200]: GET /assets/js/app.js
+[Tue Mar 17 21:47:06 2026] 172.31.121.162:51282 Closing
+[Tue Mar 17 21:47:07 2026] 127.0.0.1:33568 Accepted
+[Tue Mar 17 21:47:07 2026] 127.0.0.1:33578 Accepted
+[Tue Mar 17 21:47:07 2026] 127.0.0.1:33568 [200]: GET /assets/css/style.css
+[Tue Mar 17 21:47:07 2026] 127.0.0.1:33568 Closing
+[Tue Mar 17 21:47:07 2026] 127.0.0.1:33578 [200]: GET /assets/js/app.js
+[Tue Mar 17 21:47:07 2026] 127.0.0.1:33578 Closing
+[Tue Mar 17 21:47:08 2026] 127.0.0.1:33582 Accepted
+[Tue Mar 17 21:47:08 2026] 127.0.0.1:33582 [404]: GET /favicon.ico - No such file or directory
+[Tue Mar 17 21:47:08 2026] 127.0.0.1:33582 Closing
+[Tue Mar 17 21:47:12 2026] 127.0.0.1:45104 Accepted
+[Tue Mar 17 21:47:12 2026] 127.0.0.1:45104 [200]: GET /
+[Tue Mar 17 21:47:12 2026] 127.0.0.1:45104 Closing
+[Tue Mar 17 21:47:12 2026] 127.0.0.1:45110 Accepted
+[Tue Mar 17 21:47:12 2026] 127.0.0.1:45124 Accepted
+[Tue Mar 17 21:47:12 2026] 127.0.0.1:45110 [200]: GET /assets/css/style.css
+[Tue Mar 17 21:47:12 2026] 127.0.0.1:45110 Closing
+[Tue Mar 17 21:47:12 2026] 127.0.0.1:45124 [200]: GET /assets/js/app.js
+[Tue Mar 17 21:47:12 2026] 127.0.0.1:45124 Closing
+[Tue Mar 17 21:47:21 2026] 127.0.0.1:40898 Accepted
+[Tue Mar 17 21:47:21 2026] 127.0.0.1:40898 [200]: GET /?page=register
+[Tue Mar 17 21:47:21 2026] 127.0.0.1:40898 Closing
+[Tue Mar 17 21:47:21 2026] 127.0.0.1:40902 Accepted
+[Tue Mar 17 21:47:21 2026] 127.0.0.1:40902 [401]: GET /?action=api&endpoint=search-users&q=test
+[Tue Mar 17 21:47:21 2026] 127.0.0.1:40902 Closing
+[Tue Mar 17 21:48:18 2026] 172.31.121.162:57298 Accepted
+[Tue Mar 17 21:48:18 2026] 172.31.121.162:57298 [302]: POST /?action=login
+[Tue Mar 17 21:48:18 2026] 172.31.121.162:57298 Closing
+[Tue Mar 17 21:48:18 2026] 172.31.121.162:57302 Accepted
+[Tue Mar 17 21:48:18 2026] 172.31.121.162:57302 [200]: GET /?page=dashboard
+[Tue Mar 17 21:48:18 2026] 172.31.121.162:57302 Closing
+[Tue Mar 17 21:48:19 2026] 172.31.121.162:57314 Accepted
+[Tue Mar 17 21:48:19 2026] 172.31.121.162:57314 [200]: GET /assets/css/style.css
+[Tue Mar 17 21:48:19 2026] 172.31.121.162:57314 Closing
+[Tue Mar 17 21:48:19 2026] 172.31.121.162:57320 Accepted
+[Tue Mar 17 21:48:19 2026] 172.31.121.162:57320 [200]: GET /assets/js/social.js
+[Tue Mar 17 21:48:19 2026] 172.31.121.162:57320 Closing
+[Tue Mar 17 21:48:19 2026] 172.31.121.162:57334 Accepted
+[Tue Mar 17 21:48:19 2026] 172.31.121.162:57334 [200]: GET /assets/js/app.js
+[Tue Mar 17 21:48:19 2026] 172.31.121.162:57334 Closing
+[Tue Mar 17 21:48:30 2026] 172.31.121.162:41440 Accepted
+[Tue Mar 17 21:48:30 2026] 172.31.121.162:41440 [200]: GET /?action=api&endpoint=search-users&q=ma
+[Tue Mar 17 21:48:30 2026] 172.31.121.162:41440 Closing
+[Tue Mar 17 21:48:31 2026] 172.31.121.162:41450 Accepted
+[Tue Mar 17 21:48:31 2026] 172.31.121.162:41450 [200]: GET /?action=api&endpoint=search-users&q=mar
+[Tue Mar 17 21:48:31 2026] 172.31.121.162:41450 Closing
+[Tue Mar 17 21:48:33 2026] 172.31.121.162:41460 Accepted
+[Tue Mar 17 21:48:33 2026] 172.31.121.162:41460 [200]: GET /?action=api&endpoint=search-users&q=mari
+[Tue Mar 17 21:48:33 2026] 172.31.121.162:41460 Closing
+[Tue Mar 17 21:48:37 2026] 172.31.121.162:41466 Accepted
+[Tue Mar 17 21:48:37 2026] 172.31.121.162:41466 [200]: GET /?action=api&endpoint=search-users&q=marie
+[Tue Mar 17 21:48:37 2026] 172.31.121.162:41466 Closing
+[Tue Mar 17 21:48:43 2026] 172.31.121.162:38118 Accepted
+[Tue Mar 17 21:48:43 2026] 172.31.121.162:38118 [200]: GET /?action=api&endpoint=get-conversations
+[Tue Mar 17 21:48:43 2026] 172.31.121.162:38118 Closing
+[Tue Mar 17 21:48:50 2026] 172.31.121.162:47284 Accepted
+[Tue Mar 17 21:48:50 2026] 172.31.121.162:47284 [200]: GET /?action=api&endpoint=get-feed
+[Tue Mar 17 21:48:50 2026] 172.31.121.162:47284 Closing
+[Tue Mar 17 21:49:48 2026] 172.31.121.162:33312 Accepted
+[Tue Mar 17 21:49:48 2026] 172.31.121.162:33312 [200]: GET /?action=api&endpoint=get-feed
+[Tue Mar 17 21:49:48 2026] 172.31.121.162:33312 Closing

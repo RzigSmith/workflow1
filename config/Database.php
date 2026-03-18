@@ -5,13 +5,15 @@ class Database {
     private $conn;
 
     private function __construct() {
-        try {
-            $dbPath = __DIR__ . '/../database/workflow.sqlite';
-            $this->conn = new PDO("sqlite:" . $dbPath);
+       try {
+            $this->conn = new PDO(
+                "mysql:host=localhost;dbname=workflow;charset=utf8",
+                "root",
+                ""
+            );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->conn->exec('PRAGMA foreign_keys = ON;');
-            $this->conn->exec('PRAGMA journal_mode = WAL;');
         } catch (PDOException $e) {
+            // Rethrow to allow global exception handler to present a clean error.
             throw new RuntimeException('Impossible de se connecter à la base de données. ' . $e->getMessage(), 0, $e);
         }
     }
