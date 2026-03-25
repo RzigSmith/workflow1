@@ -6,7 +6,7 @@ require_once __DIR__ . '/../models/Activite.php';
 require_once __DIR__ . '/../models/Ami.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../views/login.php');
+    header('Location: /?page=login');
     exit;
 }
 
@@ -43,7 +43,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
   <title>Tableau de bord – WorkFlow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../public/assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
 
@@ -128,7 +128,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
           <div class="user-role">Utilisateur</div>
         </div>
       </div>
-      <a href="../public/index.php?action=logout" class="nav-item" style="margin-top:4px;" data-confirm="Voulez-vous vous déconnecter ?">
+      <a href="/?action=logout" class="nav-item" style="margin-top:4px;" data-confirm="Voulez-vous vous déconnecter ?">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Déconnexion
       </a>
@@ -208,7 +208,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
                     <div class="friend-card" style="padding:0.6rem 0.8rem;">
                       <div class="user-avatar-sm"><?= strtoupper(substr($ami['nom'],0,1)) ?></div>
                       <div class="user-info-sm"><div class="name"><?= htmlspecialchars($ami['nom'].' '.$ami['prenom']) ?></div><div class="handle">@<?= htmlspecialchars($ami['username']??'—') ?></div></div>
-                      <button class="btn btn-outline btn-sm" onclick="Social.openChat(<?= $ami['id_user'] ?>, <?= json_encode($ami['nom'].' '.$ami['prenom']) ?>)">
+                      <button class="btn btn-outline btn-sm" data-user-id="<?= $ami['id_user'] ?>" data-user-name="<?= htmlspecialchars($ami['nom'].' '.$ami['prenom']) ?>" onclick="Social.openChatFromBtn(this)">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                         Chat
                       </button>
@@ -240,18 +240,28 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
             <?php else: ?>
               <div class="activite-list">
                 <?php foreach ($activites as $a): ?>
-                  <div class="activite-item" style="cursor:pointer;" onclick="document.querySelectorAll('.activite-item').forEach(i=>i.style.background=''); this.style.background='rgba(79,70,229,0.04)'; document.getElementById('share-activite-btn').style.display='flex'; window._selectedActivite={id:<?= $a['id_activite'] ?>,libelle:<?= json_encode($a['libelle']) ?>};">
-                    <div class="activite-dot <?= $etatDot[$a['id_etat']] ?? 'dot-pending' ?>"></div>
-                    <div class="activite-info">
-                      <div class="activite-label"><?= htmlspecialchars($a['libelle']) ?></div>
-                      <div class="activite-meta">
-                        <?= $a['description'] ? htmlspecialchars(mb_substr($a['description'],0,50)).'… · ' : '' ?>
-                        <?= $etatLabel[$a['id_etat']] ?? '—' ?>
-                        <?= $a['date_activite'] ? ' · '.htmlspecialchars($a['date_activite']) : '' ?>
-                        <?= ($a['heure_debut']&&$a['heure_fin']) ? ' · '.htmlspecialchars($a['heure_debut']).'→'.htmlspecialchars($a['heure_fin']) : '' ?>
+                  <div class="activite-item" style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+                    <div style="display:flex;align-items:center;gap:0.75rem;flex:1;cursor:pointer;" onclick="document.querySelectorAll('.activite-item').forEach(i=>i.style.background=''); this.parentElement.style.background='rgba(79,70,229,0.04)'; document.getElementById('share-activite-btn').style.display='flex'; window._selectedActivite={id:<?= $a['id_activite'] ?>,libelle:<?= json_encode($a['libelle']) ?>};">
+                      <div class="activite-dot <?= $etatDot[$a['id_etat']] ?? 'dot-pending' ?>"></div>
+                      <div class="activite-info">
+                        <div class="activite-label"><?= htmlspecialchars($a['libelle']) ?></div>
+                        <div class="activite-meta">
+                          <?= $a['description'] ? htmlspecialchars(mb_substr($a['description'],0,50)).'… · ' : '' ?>
+                          <?= $etatLabel[$a['id_etat']] ?? '—' ?>
+                          <?= $a['date_activite'] ? ' · '.htmlspecialchars($a['date_activite']) : '' ?>
+                          <?= ($a['heure_debut']&&$a['heure_fin']) ? ' · '.htmlspecialchars($a['heure_debut']).'→'.htmlspecialchars($a['heure_fin']) : '' ?>
+                        </div>
                       </div>
+                      <?php $p=strtolower($a['priorite']??''); if(isset($priorityBadge[$p])): ?><span class="badge <?= $priorityBadge[$p] ?>"><?= $priorityLabel[$p] ?></span><?php endif; ?>
                     </div>
-                    <?php $p=strtolower($a['priorite']??''); if(isset($priorityBadge[$p])): ?><span class="badge <?= $priorityBadge[$p] ?>"><?= $priorityLabel[$p] ?></span><?php endif; ?>
+                    <div style="display:flex;gap:0.3rem;">
+                      <button class="btn btn-outline btn-sm" style="padding:0.4rem 0.8rem;font-size:0.8rem;" data-activite='<?= htmlspecialchars(json_encode($a, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)) ?>' onclick="Activite.openEditModalFromButton(this,event);" title="Modifier">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                      </button>
+                      <button class="btn btn-outline btn-sm" style="padding:0.4rem 0.8rem;font-size:0.8rem;color:var(--danger);border-color:var(--danger);" onclick="Activite.delete(<?= $a['id_activite'] ?>)" title="Supprimer">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                      </button>
+                    </div>
                   </div>
                 <?php endforeach; ?>
               </div>
@@ -278,6 +288,35 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
               </div>
               <div class="form-actions">
                 <button type="submit" class="btn btn-primary"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Créer</button>
+                <button type="button" class="btn btn-outline" onclick="WorkFlow.nav.navigate('activites','Activités')">Annuler</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ MODIFIER ACTIVITÉ ══ -->
+      <section class="page-section" data-id="modifier-activite">
+        <div class="card" style="max-width:620px;">
+          <div class="card-header"><span class="card-title">Modifier l'activité</span></div>
+          <div class="card-body">
+            <form method="POST" action="/?action=modifier-activite" novalidate id="form-modifier-activite">
+              <input type="hidden" name="id_activite" id="mod-id_activite" value="">
+              <div class="form-group"><label for="mod-libelle">Titre *</label><input class="form-control" type="text" id="mod-libelle" name="libelle" placeholder="Ex: Préparer la réunion" required></div>
+              <div class="form-group"><label for="mod-description">Description</label><textarea class="form-control" id="mod-description" name="description" rows="3" placeholder="Détails…" style="resize:vertical;"></textarea></div>
+              <div class="form-row">
+                <div class="form-group"><label for="mod-priorite">Priorité *</label><select class="form-control" id="mod-priorite" name="priorite" required><option value="">Choisir…</option><option value="haute">🔴 Haute</option><option value="moyenne">🟡 Moyenne</option><option value="basse">🟢 Basse</option></select></div>
+                <div class="form-group"><label for="mod-date_activite">Date *</label><input class="form-control" type="date" id="mod-date_activite" name="date_activite" required></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label for="mod-heure_debut">Heure début</label><input class="form-control" type="time" id="mod-heure_debut" name="heure_debut"></div>
+                <div class="form-group"><label for="mod-heure_fin">Heure fin</label><input class="form-control" type="time" id="mod-heure_fin" name="heure_fin"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label for="mod-id_etat">État</label><select class="form-control" id="mod-id_etat" name="id_etat"><option value="1">En attente</option><option value="2">En cours</option><option value="3">Terminée</option></select></div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Enregistrer</button>
                 <button type="button" class="btn btn-outline" onclick="WorkFlow.nav.navigate('activites','Activités')">Annuler</button>
               </div>
             </form>
@@ -389,7 +428,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
                       <div class="handle">@<?= htmlspecialchars($ami['username']??'—') ?></div>
                     </div>
                     <div class="actions">
-                      <button class="btn btn-outline btn-sm" onclick="Social.openChat(<?= $ami['id_user'] ?>, <?= json_encode($ami['nom'].' '.$ami['prenom']) ?>)">
+                      <button class="btn btn-outline btn-sm" data-user-id="<?= $ami['id_user'] ?>" data-user-name="<?= htmlspecialchars($ami['nom'].' '.$ami['prenom']) ?>" onclick="Social.openChatFromBtn(this)" title="Démarrer un chat">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> Chat
                       </button>
                       <button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="Social.removeFriend(<?= $ami['id_user'] ?>, this)" title="Retirer">✕</button>
@@ -408,9 +447,12 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
 
           <!-- Conv list -->
           <div class="chat-sidebar" id="chat-sidebar">
-            <div class="chat-sidebar-header">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:0.4rem;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-              Conversations
+            <div class="chat-sidebar-header" style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:0.4rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:0.4rem;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                <span>Conversations</span>
+              </div>
+              <button class="btn btn-sm btn-primary" onclick="WorkFlow.nav.navigate('amis','Amis')" style="padding:0.35rem 0.7rem;">+ Nouveau chat</button>
             </div>
             <div class="conv-list" id="conv-list">
               <div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:0.875rem;">
@@ -425,9 +467,11 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
             <div class="chat-empty" id="chat-empty">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               <p>Sélectionnez une conversation<br>ou commencez un chat depuis vos <strong>Amis</strong></p>
+              <p style="color:var(--text-muted);font-size:0.85rem;">Cliquez sur un ami pour commencer.</p>
             </div>
-            <div id="chat-active" style="display:none;flex:1;display:none;flex-direction:column;overflow:hidden;">
+            <div id="chat-active" style="flex-direction:column;overflow:hidden;">
               <div class="chat-header" id="chat-header">
+                <button class="btn btn-outline btn-sm chat-back-btn" id="chat-back-btn" onclick="Chat.showConversations()">←</button>
                 <div class="user-avatar-sm" id="chat-avatar" style="width:34px;height:34px;"></div>
                 <div><div class="name" id="chat-contact-name">—</div><div class="chat-status">En ligne</div></div>
               </div>
@@ -504,8 +548,8 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
   </div>
 </div>
 
-<script src="../public/assets/js/app.js"></script>
-<script src="../public/assets/js/social.js"></script>
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/social.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const flash = document.getElementById('flash-data');

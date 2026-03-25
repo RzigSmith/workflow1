@@ -1,9 +1,11 @@
 <?php
 require_once __DIR__ . '/../core/Flash.php';
+require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/Utilisateur.php';
 require_once __DIR__ . '/../models/Ami.php';
 require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../models/ChatConversation.php';
+require_once __DIR__ . '/../models/Activite.php';
 
 class ApiController {
 
@@ -48,7 +50,34 @@ class ApiController {
                 $target = (int)($data['id_user'] ?? 0);
                 if (!$target || $target === $userId) $this->json(['error'=>'Invalid'], 400);
                 $model  = new Ami();
+                
+                // Vérifier si relation existe déjà
+                $statut = $model->statutRelation($userId, $target);
+                if ($statut === 'accepted') {
+                    $this->json(['error'=>'Vous êtes déjà amis'], 400);
+                }
+                if ($statut === 'sent') {
+                    $this->json(['error'=>'Demande déjà envoyée'], 400);
+                }
+                if ($statut === 'received') {
+                    $this->json(['error'=>'Acceptez d\'abord sa demande'], 400);
+                }
+                if ($statut === 'declined' && !$model->peutRenvoyerDemande($userId, $target)) {
+                    $this->json(['error'=>'Attendez 24h avant de renvoyer'], 429);
+                }
+                
                 $model->envoyerDemande($userId, $target);
+                $this->json(['success' => true]);
+                break;
+
+            // ── Annuler une demande d'ami ─────────────────
+            case 'cancel-friend-request':
+                if ($method !== 'POST') $this->json(['error'=>'POST required'], 405);
+                $data   = json_decode(file_get_contents('php://input'), true) ?? [];
+                $target = (int)($data['id_user'] ?? 0);
+                if (!$target) $this->json(['error'=>'Invalid'], 400);
+                $model  = new Ami();
+                $model->annulerDemande($userId, $target);
                 $this->json(['success' => true]);
                 break;
 
@@ -123,6 +152,13 @@ class ApiController {
                 $this->json($convs);
                 break;
 
+            // ── Liste amis (fallback mobile) ────────────────
+            case 'get-friends':
+                $ami = new Ami();
+                $amis = $ami->getAmis($userId);
+                $this->json($amis);
+                break;
+
             // ── Créer un post ─────────────────────────────
             case 'create-post':
                 if ($method !== 'POST') $this->json(['error'=>'POST required'], 405);
@@ -158,6 +194,47 @@ class ApiController {
                 $postModel = new Post();
                 $posts    = $postModel->getFeed($userId, array_map('intval', $amisIds));
                 $this->json($posts);
+                break;
+
+            // ── Mettre à jour état activité ───────────────
+            case 'update-activite-etat':
+                if ($method !== 'POST') $this->json(['error'=>'POST required'], 405);
+                $data = json_decode(file_get_contents('php://input'), true) ?? [];
+                $id_activite = (int)($data['id_activite'] ?? 0);
+                if (!$id_activite) $this->json(['error'=>'Invalid'], 400);
+                $activiteModel = new Activite();
+                $activiteModel->mettreAJourEtat($id_activite);
+                $activite = $activiteModel->obtenirParId($id_activite);
+                $this->json(['success' => true, 'id_etat' => $activite['id_etat']]);
+                break;
+
+            // ── Marquer messages comme lus ──────────────────
+            case 'mark-messages-read':
+                if ($method !== 'POST') $this->json(['error'=>'POST required'], 405);
+                $data = json_decode(file_get_contents('php://input'), true) ?? [];
+                $convId = (int)($data['conv_id'] ?? 0);
+                if (!$convId) $this->json(['error'=>'Invalid'], 400);
+                $chat = new ChatConversation();
+                $chat->marquerCommeLus($convId, $userId);
+                $this->json(['success' => true]);
+                break;
+
+            // ── Compter messages non lus ────────────────────
+            case 'unread-count':
+                $chat = new ChatConversation();
+                $count = $chat->comptNonLus($userId);
+                $this->json(['unread' => $count]);
+                break;
+
+            // ── Mettre à jour statut en ligne ──────────────
+            case 'update-online-status':
+                if ($method !== 'POST') $this->json(['error'=>'POST required'], 405);
+                $data = json_decode(file_get_contents('php://input'), true) ?? [];
+                $online = isset($data['online']) ? (int)$data['online'] : 1;
+                $db = Database::getInstance()->getConn();
+                $stmt = $db->prepare("UPDATE utilisateur SET statut_en_ligne = :status WHERE id_user = :id");
+                $stmt->execute([':status' => $online, ':id' => $userId]);
+                $this->json(['success' => true]);
                 break;
 
             default:

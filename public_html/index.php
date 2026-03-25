@@ -5,18 +5,18 @@ define('DEBUG', true);
 
 session_start();
 
-require_once '../config/Database.php';
-require_once '../core/Model.php';
-require_once '../core/Flash.php';
-require_once '../controllers/AuthController.php';
+require_once './config/Database.php';
+require_once './core/Model.php';
+require_once './core/Flash.php';
+require_once './controllers/AuthController.php';
 
 // Autoload controllers and models when referenced by name
 spl_autoload_register(function ($class) {
-    if (file_exists("../models/$class.php")) {
-        require_once "../models/$class.php";
+    if (file_exists("./models/$class.php")) {
+        require_once "./models/$class.php";
     }
-    if (file_exists("../controllers/$class.php")) {
-        require_once "../controllers/$class.php";
+    if (file_exists("./controllers/$class.php")) {
+        require_once "./controllers/$class.php";
     }
 });
 
@@ -61,6 +61,16 @@ if ($action === 'creer-activite') {
     exit;
 }
 
+if ($action === 'modifier-activite') {
+    (new ActiviteController())->modifier();
+    exit;
+}
+
+if ($action === 'supprimer-activite') {
+    (new ActiviteController())->supprimer();
+    exit;
+}
+
 if ($action === 'api') {
     $endpoint = $_GET['endpoint'] ?? '';
     (new ApiController())->handle($endpoint);
@@ -71,11 +81,11 @@ $page = $_GET['page'] ?? 'login';
 
 switch ($page) {
     case 'dashboard':
-        require '../views/dashboard.php';
+        require './views/dashboard.php';
         break;
     case 'register':
-        require '../views/register.php';
+        require './views/register.php';
         break;
     default:
-        require '../views/login.php';
+        require './views/login.php';
 }

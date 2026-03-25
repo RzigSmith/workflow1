@@ -19,7 +19,7 @@ ob_start();
   </div>
 <?php endif; ?>
 
-<form method="POST" action="../public/index.php?action=register" novalidate>
+<form method="POST" action="/?action=register" novalidate>
 
   <div class="form-row">
     <div class="form-group">
@@ -63,7 +63,7 @@ ob_start();
 
 </form>
 
-<p class="auth-footer">Déjà un compte ? <a href="../views/login.php">Se connecter</a></p>
+<p class="auth-footer">Déjà un compte ? <a href="./views/login.php">Se connecter</a></p>
 
 <?php clear_old(); ?>
 

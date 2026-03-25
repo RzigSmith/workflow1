@@ -35,13 +35,16 @@ class ChatConversation extends Model {
 
     public function getMesConversations(int $userId): array {
         $sql = "SELECT c.id_conversation, c.type_conversation,
-                       u.id_user, u.nom, u.prenom, u.username,
+                       u.id_user, u.nom, u.prenom, u.username, u.statut_en_ligne,
                        (SELECT contenu FROM chat_message cm2
                         WHERE cm2.id_conversation = c.id_conversation
                         ORDER BY cm2.date_envoi DESC LIMIT 1) AS dernier_message,
                        (SELECT date_envoi FROM chat_message cm3
                         WHERE cm3.id_conversation = c.id_conversation
-                        ORDER BY cm3.date_envoi DESC LIMIT 1) AS date_dernier
+                        ORDER BY cm3.date_envoi DESC LIMIT 1) AS date_dernier,
+                       (SELECT COUNT(*) FROM chat_message cm4
+                        WHERE cm4.id_conversation = c.id_conversation
+                        AND cm4.id_user != :uid AND cm4.lu = 0) AS messages_non_lus
                 FROM conversation_membre cm
                 JOIN conversation c ON cm.id_conversation = c.id_conversation
                 JOIN conversation_membre cm_other ON cm_other.id_conversation = c.id_conversation
@@ -111,5 +114,29 @@ class ChatConversation extends Model {
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':c' => $convId, ':last' => $lastId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function marquerCommeLus(int $convId, int $userId): bool {
+        $check = $this->db->prepare(
+            "SELECT 1 FROM conversation_membre WHERE id_conversation=:c AND id_user=:u"
+        );
+        $check->execute([':c' => $convId, ':u' => $userId]);
+        if (!$check->fetchColumn()) return false;
+
+        $stmt = $this->db->prepare(
+            "UPDATE chat_message SET lu = 1 
+             WHERE id_conversation = :c AND id_user != :u AND lu = 0"
+        );
+        return $stmt->execute([':c' => $convId, ':u' => $userId]);
+    }
+
+    public function comptNonLus(int $userId): int {
+        $sql = "SELECT COUNT(DISTINCT cm.id_conversation)
+                FROM chat_message cm
+                JOIN conversation_membre cm_user ON cm_user.id_conversation = cm.id_conversation
+                WHERE cm_user.id_user = :uid AND cm.id_user != :uid2 AND cm.lu = 0";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':uid' => $userId, ':uid2' => $userId]);
+        return (int) $stmt->fetchColumn();
     }
 }

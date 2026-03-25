@@ -5,8 +5,9 @@ class Ami extends Model {
     private $table = 'amis';
 
     public function envoyerDemande(int $demandeur, int $receveur): bool {
-        $sql = "INSERT OR IGNORE INTO {$this->table} (id_demandeur, id_receveur, statut)
-                VALUES (:d, :r, 'pending')";
+        $sql = "INSERT INTO {$this->table} (id_demandeur, id_receveur, statut, date_demande)
+                VALUES (:d, :r, 'pending', NOW())
+                ON DUPLICATE KEY UPDATE statut = 'pending'";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([':d' => $demandeur, ':r' => $receveur]);
     }
@@ -81,6 +82,23 @@ class Ami extends Model {
         if ($row['statut'] === 'accepted') return 'accepted';
         if ($row['statut'] === 'pending' && $row['id_demandeur'] == $me) return 'sent';
         if ($row['statut'] === 'pending' && $row['id_demandeur'] == $autre) return 'received';
+        if ($row['statut'] === 'declined') return 'declined';
         return 'none';
+    }
+
+    public function annulerDemande(int $demandeur, int $receveur): bool {
+        $sql = "DELETE FROM {$this->table}
+                WHERE id_demandeur = :d AND id_receveur = :r AND statut = 'pending'";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':d' => $demandeur, ':r' => $receveur]);
+    }
+
+    public function peutRenvoyerDemande(int $demandeur, int $receveur): bool {
+        $sql = "SELECT 1 FROM {$this->table}
+                WHERE id_demandeur = :d AND id_receveur = :r AND statut = 'declined'
+                  AND datetime(date_demande, '+24 hours') > datetime('now')";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':d' => $demandeur, ':r' => $receveur]);
+        return !$stmt->fetchColumn();
     }
 }
