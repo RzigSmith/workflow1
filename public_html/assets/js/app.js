@@ -6,6 +6,66 @@
 (function() {
     'use strict';
 
+    const THEME_KEY = 'wf-theme';
+
+    /* ── Theme (clair / sombre) ─────────────────── */
+    const theme = {
+        init() {
+            const saved = localStorage.getItem(THEME_KEY);
+            const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            this.set(saved || preferred, false);
+
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem(THEME_KEY)) {
+                    this.set(e.matches ? 'dark' : 'light', false);
+                }
+            });
+
+            document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
+                btn.setAttribute('aria-pressed', this.get() === 'dark' ? 'true' : 'false');
+                btn.addEventListener('click', () => this.toggle(btn));
+            });
+        },
+
+        get() {
+            return document.documentElement.getAttribute('data-theme') || 'light';
+        },
+
+        set(mode, persist = true) {
+            document.documentElement.setAttribute('data-theme', mode);
+            if (persist) localStorage.setItem(THEME_KEY, mode);
+            document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
+                btn.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
+            });
+            document.dispatchEvent(new CustomEvent('themechange', { detail: { theme: mode } }));
+        },
+
+        toggle(btn) {
+            const next = this.get() === 'dark' ? 'light' : 'dark';
+            this.set(next);
+            this.animateToggle(btn);
+            if (window.WorkFlow?.toast) {
+                window.WorkFlow.toast.show(
+                    next === 'dark' ? 'Mode sombre activé' : 'Mode clair activé',
+                    'info',
+                    2200
+                );
+            }
+        },
+
+        animateToggle(btn) {
+            const targets = btn ? [btn] : [...document.querySelectorAll('[data-theme-toggle]')];
+            targets.forEach(el => {
+                el.classList.remove('theme-toggle-spin');
+                void el.offsetWidth;
+                el.classList.add('theme-toggle-spin');
+                setTimeout(() => el.classList.remove('theme-toggle-spin'), 500);
+            });
+            document.documentElement.classList.add('theme-switching');
+            setTimeout(() => document.documentElement.classList.remove('theme-switching'), 450);
+        }
+    };
+
     /* ── Progress bar ───────────────────────────── */
     const progress = {
         el: null,
@@ -70,67 +130,139 @@
         sections: {},
         navItems: [],
         topbarTitle: null,
+        indicator: null,
+        isNavigating: false,
+        currentId: null,
 
         init() {
             this.sections = {};
             this.navItems = document.querySelectorAll('.nav-item[data-section]');
             this.topbarTitle = document.getElementById('topbar-title');
+            this.indicator = document.getElementById('nav-indicator');
 
-            // Index sections
             document.querySelectorAll('.page-section').forEach(s => {
                 this.sections[s.dataset.id] = s;
             });
 
-            // Bind nav items
             this.navItems.forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
                     this.navigate(item.dataset.section, item.dataset.title || item.dataset.section);
+                    this.ripple(item);
                 });
             });
 
-            // Load from hash
-            const hash = location.hash.replace('#', '') || 'dashboard';
-            this.navigate(hash, null, false);
+            const hash = location.hash.replace('#', '') || 'accueil';
+            const validHash = this.sections[hash] ? hash : 'accueil';
+            this.navigate(validHash, null, false);
+
+            window.addEventListener('resize', () => {
+                const active = document.querySelector('.nav-item[data-section].active');
+                if (active) this.moveIndicator(active);
+            });
+
+            document.addEventListener('themechange', () => {
+                const active = document.querySelector('.nav-item[data-section].active');
+                if (active) requestAnimationFrame(() => this.moveIndicator(active));
+            });
+        },
+
+        ripple(el) {
+            el.classList.remove('ripple');
+            void el.offsetWidth;
+            el.classList.add('ripple');
+            setTimeout(() => el.classList.remove('ripple'), 500);
+        },
+
+        moveIndicator(activeItem) {
+            if (!this.indicator || !activeItem) return;
+            const nav = activeItem.closest('.sidebar-nav');
+            if (!nav) return;
+            const navRect = nav.getBoundingClientRect();
+            const itemRect = activeItem.getBoundingClientRect();
+            const top = itemRect.top - navRect.top + nav.scrollTop;
+            this.indicator.style.transform = `translateY(${top}px)`;
+            this.indicator.style.height = `${itemRect.height}px`;
+            this.indicator.classList.add('visible');
         },
 
         navigate(id, title, pushState = true) {
             const section = this.sections[id];
-            if (!section) return;
+            if (!section || this.isNavigating) return;
+            if (id === this.currentId && section.classList.contains('active')) return;
 
-            // Progress bar
+            const current = document.querySelector('.page-section.active');
+            if (current === section) return;
+
+            this.isNavigating = true;
             progress.start();
 
-            // Deactivate all
-            Object.values(this.sections).forEach(s => s.classList.remove('active'));
-            this.navItems.forEach(i => i.classList.remove('active'));
+            const finish = () => {
+                Object.values(this.sections).forEach(s => {
+                    s.classList.remove('active', 'leaving', 'entering');
+                });
+                this.navItems.forEach(i => i.classList.remove('active'));
 
-            // Activate target
-            section.classList.add('active');
-            const activeItem = document.querySelector(`.nav-item[data-section="${id}"]`);
-            if (activeItem) {
-                activeItem.classList.add('active');
-                title = title || activeItem.dataset.title || id;
+                section.classList.add('active');
+                const activeItem = document.querySelector(`.nav-item[data-section="${id}"]`);
+                if (activeItem) {
+                    activeItem.classList.add('active');
+                    title = title || activeItem.dataset.title || id;
+                    requestAnimationFrame(() => this.moveIndicator(activeItem));
+                }
+
+                if (this.topbarTitle && title) {
+                    this.topbarTitle.style.opacity = '0';
+                    this.topbarTitle.style.transform = 'translateY(-4px)';
+                    setTimeout(() => {
+                        this.topbarTitle.textContent = title;
+                        this.topbarTitle.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                        this.topbarTitle.style.opacity = '1';
+                        this.topbarTitle.style.transform = 'none';
+                    }, 80);
+                }
+
+                if (pushState) {
+                    history.pushState({ section: id }, '', `#${id}`);
+                }
+
+                this.currentId = id;
+                sidebar.close();
+
+                if (id === 'messages' && window.Chat) {
+                    setTimeout(() => window.Chat.loadConversations(), 120);
+                }
+                if (id === 'feed' && window.Feed) {
+                    setTimeout(() => window.Feed.load(), 120);
+                }
+                if (id === 'profil' && window.Profile) {
+                    setTimeout(() => window.Profile.loadCollection(), 120);
+                }
+                if (id === 'notifications' && window.Notifications) {
+                    setTimeout(() => {
+                        window.Notifications.load();
+                        fetch('index.php?action=api&endpoint=mark-notifications-read', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: '{}'
+                        });
+                        window.Notifications.updateBadges(0);
+                    }, 120);
+                }
+
+                setTimeout(() => {
+                    progress.done();
+                    this.isNavigating = false;
+                }, 280);
+            };
+
+            if (current) {
+                current.classList.add('leaving');
+                current.classList.remove('active');
+                setTimeout(finish, 200);
+            } else {
+                finish();
             }
-
-            // Topbar title
-            if (this.topbarTitle && title) {
-                this.topbarTitle.textContent = title;
-            }
-
-            // Update hash
-            if (pushState) {
-                history.pushState({ section: id }, '', `#${id}`);
-            }
-
-            // Close mobile sidebar
-            sidebar.close();
-
-            if (id === 'messages' && window.Chat) {
-                setTimeout(() => window.Chat.loadConversations(), 120);
-            }
-
-            setTimeout(() => progress.done(), 200);
         }
     };
 
@@ -372,6 +504,7 @@
 
     /* ── Init everything ────────────────────────── */
     document.addEventListener('DOMContentLoaded', () => {
+        theme.init();
         progress.init();
         toast.init();
         modal.init();
@@ -381,13 +514,11 @@
         initPasswordToggle();
         initConfirm();
 
-        // Only init SPA nav on dashboard
         if (document.getElementById('sidebar')) {
             nav.init();
         }
     });
 
-    // Expose globally for inline use
-    window.WorkFlow = { toast, modal, nav };
+    window.WorkFlow = { toast, modal, nav, theme };
     window.Activite = activite;
 })();

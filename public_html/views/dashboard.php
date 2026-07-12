@@ -47,9 +47,13 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tableau de bord – WorkFlow</title>
+  <script>
+    (function(){var t=localStorage.getItem('wf-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 <body>
 
@@ -84,6 +88,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
     </div>
 
     <div class="sidebar-nav">
+      <div class="nav-indicator" id="nav-indicator"></div>
       <div class="nav-section-label">Principal</div>
 
       <button class="nav-item active" data-section="accueil" data-title="Tableau de bord">
@@ -160,6 +165,10 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
         <span class="topbar-title" id="topbar-title">Tableau de bord</span>
       </div>
       <div class="topbar-right">
+        <button class="theme-toggle" data-theme-toggle type="button" title="Mode clair / sombre" aria-label="Changer le thème" aria-pressed="false">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
         <button class="icon-btn" id="topbar-notif-btn" title="Notifications" onclick="WorkFlow.nav.navigate('notifications','Notifications')">
           <span class="notif-dot" id="topbar-notif-dot" style="display:none;"></span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
@@ -641,33 +650,24 @@ document.addEventListener('DOMContentLoaded', function () {
 .profile-avatar-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
 .profile-avatar {
   width: 96px; height: 96px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), #7c3aed);
   display: flex; align-items: center; justify-content: center;
   font-size: 2rem; font-weight: 800; overflow: hidden; flex-shrink: 0;
 }
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.collection-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem;
-}
-.collection-item {
-  position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden;
-  border: 1px solid var(--border); background: var(--surface2);
-}
+.collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; }
+.collection-item { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; }
 .collection-item img { width: 100%; height: 100%; object-fit: cover; }
 .collection-item .delete-btn {
-  position: absolute; top: 6px; right: 6px;
-  width: 26px; height: 26px; border-radius: 50%;
-  background: rgba(0,0,0,0.65); color: #fff; border: none;
-  cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;
+  position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(0,0,0,0.65); color: #fff; border: none; cursor: pointer;
+  font-size: 0.75rem; display: flex; align-items: center; justify-content: center;
   opacity: 0; transition: opacity 0.2s;
 }
 .collection-item:hover .delete-btn { opacity: 1; }
 .post-photo { width: 100%; max-height: 360px; object-fit: cover; border-radius: 8px; margin-top: 0.75rem; }
-.post-activite-card {
-  margin-top: 0.75rem; padding: 0.75rem; border-radius: 8px;
-  background: rgba(79,70,229,0.06); border: 1px solid rgba(79,70,229,0.15);
-}
+.post-activite-card { margin-top: 0.75rem; padding: 0.75rem; border-radius: 8px; }
 .post-activite-card .meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+.topbar-title { transition: opacity 0.25s ease, transform 0.25s ease; }
 </style>
 </body>
 </html>
