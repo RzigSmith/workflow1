@@ -4,9 +4,9 @@
 
 ### 1.1 Contexte
 
-Le projet WorkFlow est une application web développée dans le cadre d’une formation en informatique de premier cycle. Il vise à proposer une plateforme collaborative pour la gestion d’activités, la communication entre utilisateurs, et le suivi des tâches. Ce projet est conçu pour répondre aux besoins des étudiants ou d’un petit groupe de travail qui souhaitent organiser des activités, partager des publications et échanger via un système de messagerie.
+Le projet WorkFlow est une application web développée dans le cadre d’une formation en informatique de deuxieme licence. Il vise à proposer une plateforme collaborative pour la gestion d’activités, la communication entre utilisateurs, et le suivi des tâches. Ce projet est conçu pour répondre aux besoins des étudiants ou d’un petit groupe de travail qui souhaitent organiser des activités, partager des publications et échanger via un système de messagerie.
 
-Dans un environnement académique, les tâches quotidiennes sont souvent gérées manuellement, ce qui peut générer des oublis, un manque de suivi et des difficultés de coordination. WorkFlow s’inscrit dans cette démarche de transition numérique en offrant une solution simple et légère adaptée au niveau L1/L2.
+Dans un environnement académique, les tâches quotidiennes sont souvent gérées manuellement, ce qui peut générer des oublis, un manque de suivi et des difficultés de coordination. WorkFlow s’inscrit dans cette démarche de transition numérique en offrant une solution simple et légère adaptée au niveau L2.
 
 ### 1.2 Problématique
 
@@ -39,7 +39,7 @@ Le projet a été réalisé en plusieurs étapes :
 - Mise en place des fonctionnalités d’authentification, d’activités, d’amis, de chat, de posts et de notifications.
 - Tests fonctionnels et validation des flux principaux.
 
-Cette méthodologie a combiné une conception progressive avec des tests réguliers, en s’appuyant sur un workflow simple adapté au niveau L1/L2.
+Cette méthodologie a combiné une conception progressive avec des tests réguliers, en s’appuyant sur un workflow simple 
 
 ### 1.5 Structure du document
 
@@ -104,7 +104,7 @@ Ce document est structuré comme suit :
 
 #### Public cible
 
-- Étudiants en L1/L2 en informatique.
+- Étudiants en informatique.
 - Utilisateurs recherchant une plateforme de suivi de tâches et de communication.
 - Administrateur chargé de superviser les utilisateurs et contenus.
 
@@ -278,6 +278,3 @@ Le fichier `uploads/email_log.txt` contient les emails simulés envoyés pour OT
 - Page d’administration.
 - Section messages et notifications.
 
----
-
-*Document rédigé à partir de l’analyse du code source du projet WorkFlow et du guide de rédaction de monographie L1/L2.*
