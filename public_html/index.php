@@ -31,13 +31,15 @@ function handle_exception(Throwable $e): void
 
     set_flash('error', $message);
 
-    header('Location: /?page=login');
+    header('Location: index.php?page=login');
     exit;
 }
 
 set_exception_handler('handle_exception');
 
+// ── ACTIONS (POST/GET handlers) ──────────────────────────
 $action = $_GET['action'] ?? null;
+
 if ($action === 'login') {
     $controller = new AuthController();
     $controller->login();
@@ -53,6 +55,30 @@ if ($action === 'register') {
 if ($action === 'logout') {
     $controller = new AuthController();
     $controller->logout();
+    exit;
+}
+
+if ($action === 'verify-otp') {
+    $controller = new AuthController();
+    $controller->verifyOtp();
+    exit;
+}
+
+if ($action === 'resend-otp') {
+    $controller = new AuthController();
+    $controller->resendOtp();
+    exit;
+}
+
+if ($action === 'forgot-password') {
+    $controller = new AuthController();
+    $controller->forgotPassword();
+    exit;
+}
+
+if ($action === 'reset-password') {
+    $controller = new AuthController();
+    $controller->resetPassword();
     exit;
 }
 
@@ -77,14 +103,27 @@ if ($action === 'api') {
     exit;
 }
 
+// ── PAGES (view rendering) ───────────────────────────────
 $page = $_GET['page'] ?? 'login';
 
 switch ($page) {
     case 'dashboard':
         require './views/dashboard.php';
         break;
+    case 'admin':
+        require './views/admin.php';
+        break;
     case 'register':
         require './views/register.php';
+        break;
+    case 'verify-otp':
+        require './views/verify-otp.php';
+        break;
+    case 'forgot-password':
+        require './views/forgot-password.php';
+        break;
+    case 'reset-password':
+        require './views/reset-password.php';
         break;
     default:
         require './views/login.php';

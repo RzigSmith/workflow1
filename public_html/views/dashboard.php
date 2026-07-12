@@ -4,9 +4,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 require_once __DIR__ . '/../core/Flash.php';
 require_once __DIR__ . '/../models/Activite.php';
 require_once __DIR__ . '/../models/Ami.php';
+require_once __DIR__ . '/../models/Utilisateur.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /?page=login');
+    header('Location: index.php?page=login');
     exit;
 }
 
@@ -30,6 +31,11 @@ $userPrenom   = $_SESSION['prenom'] ?? '';
 $userId       = (int)$_SESSION['user_id'];
 $initials     = strtoupper(substr($userNom, 0, 1));
 
+$userModel    = new Utilisateur();
+$currentUser  = $userModel->find($userId);
+$photoProfil  = $currentUser['photo_profil'] ?? null;
+$userEmail    = $currentUser['email'] ?? '';
+
 $priorityBadge = ['haute'=>'badge-high','moyenne'=>'badge-medium','basse'=>'badge-low'];
 $priorityLabel = ['haute'=>'Haute','moyenne'=>'Moyenne','basse'=>'Basse'];
 $etatDot       = [1=>'dot-pending',2=>'dot-progress',3=>'dot-done'];
@@ -43,7 +49,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
   <title>Tableau de bord – WorkFlow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
@@ -59,6 +65,9 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
   window.APP = {
     userId: <?= $userId ?>,
     userName: <?= json_encode($userNom) ?>,
+    userPrenom: <?= json_encode($userPrenom) ?>,
+    userEmail: <?= json_encode($userEmail) ?>,
+    photoProfil: <?= json_encode($photoProfil) ?>,
     activites: <?= json_encode(array_map(fn($a) => ['id'=>$a['id_activite'],'libelle'=>$a['libelle']], $activites)) ?>
   };
 </script>
@@ -106,6 +115,11 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
         Messages
       </button>
 
+      <button class="nav-item" data-section="profil" data-title="Mon Profil">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Mon Profil
+      </button>
+
       <div class="nav-section-label" style="margin-top:0.75rem;">Tâches</div>
 
       <button class="nav-item" data-section="nouvelle-activite" data-title="Nouvelle activité">
@@ -116,7 +130,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
       <button class="nav-item" data-section="notifications" data-title="Notifications">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
         Notifications
-        <?php if ($pending > 0): ?><span class="nav-badge"><?= $pending ?></span><?php endif; ?>
+        <span class="nav-badge" id="nav-notif-badge" style="display:none;">0</span>
       </button>
     </div>
 
@@ -128,7 +142,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
           <div class="user-role">Utilisateur</div>
         </div>
       </div>
-      <a href="/?action=logout" class="nav-item" style="margin-top:4px;" data-confirm="Voulez-vous vous déconnecter ?">
+      <a href="index.php?action=logout" class="nav-item" style="margin-top:4px;" data-confirm="Voulez-vous vous déconnecter ?">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Déconnexion
       </a>
@@ -146,6 +160,10 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
         <span class="topbar-title" id="topbar-title">Tableau de bord</span>
       </div>
       <div class="topbar-right">
+        <button class="icon-btn" id="topbar-notif-btn" title="Notifications" onclick="WorkFlow.nav.navigate('notifications','Notifications')">
+          <span class="notif-dot" id="topbar-notif-dot" style="display:none;"></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        </button>
         <button class="icon-btn" title="Messages" onclick="WorkFlow.nav.navigate('messages','Messages')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         </button>
@@ -153,7 +171,13 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
           <?php if (count($demandes) > 0): ?><span class="notif-dot"></span><?php endif; ?>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
         </button>
-        <div class="user-avatar" style="width:32px;height:32px;font-size:0.75rem;cursor:default;"><?= htmlspecialchars($initials) ?></div>
+        <div class="user-avatar profile-avatar-sm" id="topbar-avatar" style="width:32px;height:32px;font-size:0.75rem;cursor:pointer;overflow:hidden;" onclick="WorkFlow.nav.navigate('profil','Mon Profil')" title="Mon profil">
+          <?php if ($photoProfil): ?>
+            <img src="<?= htmlspecialchars($photoProfil) ?>" alt="Profil" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+          <?php else: ?>
+            <?= htmlspecialchars($initials) ?>
+          <?php endif; ?>
+        </div>
       </div>
     </header>
 
@@ -275,7 +299,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
         <div class="card" style="max-width:620px;">
           <div class="card-header"><span class="card-title">Créer une activité</span></div>
           <div class="card-body">
-            <form method="POST" action="/?action=creer-activite" novalidate>
+            <form method="POST" action="index.php?action=creer-activite" novalidate>
               <div class="form-group"><label for="libelle">Titre *</label><input class="form-control" type="text" id="libelle" name="libelle" placeholder="Ex: Préparer la réunion" required></div>
               <div class="form-group"><label for="description">Description</label><textarea class="form-control" id="description" name="description" rows="3" placeholder="Détails…" style="resize:vertical;"></textarea></div>
               <div class="form-row">
@@ -300,7 +324,7 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
         <div class="card" style="max-width:620px;">
           <div class="card-header"><span class="card-title">Modifier l'activité</span></div>
           <div class="card-body">
-            <form method="POST" action="/?action=modifier-activite" novalidate id="form-modifier-activite">
+            <form method="POST" action="index.php?action=modifier-activite" novalidate id="form-modifier-activite">
               <input type="hidden" name="id_activite" id="mod-id_activite" value="">
               <div class="form-group"><label for="mod-libelle">Titre *</label><input class="form-control" type="text" id="mod-libelle" name="libelle" placeholder="Ex: Préparer la réunion" required></div>
               <div class="form-group"><label for="mod-description">Description</label><textarea class="form-control" id="mod-description" name="description" rows="3" placeholder="Détails…" style="resize:vertical;"></textarea></div>
@@ -341,12 +365,21 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
                 <button onclick="Social.clearComposeActivite()" style="background:none;border:none;cursor:pointer;color:var(--primary);font-size:0.8rem;padding:0 2px;">✕</button>
               </span>
             </div>
+            <div id="compose-photo-preview" style="display:none;margin:0 0 0.5rem 3rem;">
+              <img id="compose-photo-img" src="" alt="Aperçu" style="max-height:120px;border-radius:8px;border:1px solid var(--border);">
+              <button type="button" onclick="Social.clearComposePhoto()" style="display:block;margin-top:0.25rem;background:none;border:none;color:var(--danger);font-size:0.75rem;cursor:pointer;">Retirer l'image</button>
+            </div>
             <div class="compose-footer">
               <div class="compose-opts">
                 <select id="compose-visibilite" title="Visibilité">
                   <option value="amis">👥 Amis</option>
                   <option value="public">🌍 Public</option>
                 </select>
+                <label class="btn btn-outline btn-sm" style="cursor:pointer;margin:0;" title="Ajouter une photo">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  Photo
+                  <input type="file" id="compose-photo" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none;" onchange="Social.previewComposePhoto(this)">
+                </label>
                 <button class="btn btn-outline btn-sm" onclick="Social.openAttachActivity()" title="Lier une activité">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                   Activité
@@ -487,29 +520,69 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
         </div>
       </section>
 
+      <!-- ══ MON PROFIL ══ -->
+      <section class="page-section" data-id="profil">
+        <div style="max-width:760px;margin:0 auto;">
+          <div class="card" style="margin-bottom:1.25rem;">
+            <div class="card-header"><span class="card-title">Mon Profil</span></div>
+            <div class="card-body">
+              <div class="profile-header">
+                <div class="profile-avatar-wrap">
+                  <div class="profile-avatar" id="profile-avatar">
+                    <?php if ($photoProfil): ?>
+                      <img src="<?= htmlspecialchars($photoProfil) ?>" alt="Photo de profil" id="profile-avatar-img">
+                    <?php else: ?>
+                      <span id="profile-avatar-initials"><?= htmlspecialchars($initials) ?></span>
+                    <?php endif; ?>
+                  </div>
+                  <label class="btn btn-outline btn-sm profile-upload-btn">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    Changer la photo
+                    <input type="file" id="profile-pic-input" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none;" onchange="Profile.uploadProfilePic(this)">
+                  </label>
+                </div>
+                <div class="profile-info">
+                  <h2 style="font-size:1.25rem;font-weight:800;"><?= htmlspecialchars($userPrenom . ' ' . $userNom) ?></h2>
+                  <p style="color:var(--text-muted);font-size:0.875rem;margin-top:0.25rem;"><?= htmlspecialchars($userEmail) ?></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+              <span class="card-title">Ma collection de photos</span>
+              <label class="btn btn-primary btn-sm" style="cursor:pointer;margin:0;">
+                + Ajouter
+                <input type="file" id="collection-photo-input" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none;" onchange="Profile.uploadCollectionPhoto(this)">
+              </label>
+            </div>
+            <div class="card-body">
+              <div id="collection-grid" class="collection-grid">
+                <div class="empty-state" style="grid-column:1/-1;padding:2rem 0;">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <p>Chargement de votre collection…</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- ══ NOTIFICATIONS ══ -->
       <section class="page-section" data-id="notifications">
         <div class="card">
-          <div class="card-header"><span class="card-title">Notifications</span></div>
+          <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+            <span class="card-title">Notifications</span>
+            <button class="btn btn-outline btn-sm" onclick="Notifications.markAllRead()">Tout marquer comme lu</button>
+          </div>
           <div class="card-body">
-            <?php if (empty($activites) && empty($demandes)): ?>
-              <div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><p>Aucune notification.</p></div>
-            <?php else: ?>
-              <div class="notif-list">
-                <?php foreach ($demandes as $d): ?>
-                  <div class="notif-item unread">
-                    <div class="notif-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></div>
-                    <div><div class="notif-text"><strong><?= htmlspecialchars($d['nom'].' '.$d['prenom']) ?></strong> vous a envoyé une demande d'amitié</div><div class="notif-time"><?= htmlspecialchars($d['date_demande']) ?></div></div>
-                  </div>
-                <?php endforeach; ?>
-                <?php foreach (array_slice($activites,0,10) as $a): ?>
-                  <div class="notif-item">
-                    <div class="notif-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-                    <div><div class="notif-text">Activité : <strong><?= htmlspecialchars($a['libelle']) ?></strong></div><div class="notif-time"><?= $a['date_activite'] ? htmlspecialchars($a['date_activite']) : '—' ?></div></div>
-                  </div>
-                <?php endforeach; ?>
+            <div id="notif-list" class="notif-list">
+              <div class="empty-state" style="padding:2rem 0;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                <p>Chargement des notifications…</p>
               </div>
-            <?php endif; ?>
+            </div>
           </div>
         </div>
       </section>
@@ -548,8 +621,8 @@ $etatLabel     = [1=>'En attente',2=>'En cours',3=>'Terminée'];
   </div>
 </div>
 
-<script src="../assets/js/app.js"></script>
-<script src="../assets/js/social.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/social.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const flash = document.getElementById('flash-data');
@@ -564,6 +637,37 @@ document.addEventListener('DOMContentLoaded', function () {
 @media (max-width: 900px) { .two-col-grid { grid-template-columns: 1fr !important; } }
 #chat-active { display: none; flex-direction: column; overflow: hidden; }
 #chat-active.visible { display: flex; flex: 1; }
+.profile-header { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.profile-avatar-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
+.profile-avatar {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #7c3aed);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; font-weight: 800; overflow: hidden; flex-shrink: 0;
+}
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.collection-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem;
+}
+.collection-item {
+  position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--surface2);
+}
+.collection-item img { width: 100%; height: 100%; object-fit: cover; }
+.collection-item .delete-btn {
+  position: absolute; top: 6px; right: 6px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(0,0,0,0.65); color: #fff; border: none;
+  cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+}
+.collection-item:hover .delete-btn { opacity: 1; }
+.post-photo { width: 100%; max-height: 360px; object-fit: cover; border-radius: 8px; margin-top: 0.75rem; }
+.post-activite-card {
+  margin-top: 0.75rem; padding: 0.75rem; border-radius: 8px;
+  background: rgba(79,70,229,0.06); border: 1px solid rgba(79,70,229,0.15);
+}
+.post-activite-card .meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
 </style>
 </body>
 </html>

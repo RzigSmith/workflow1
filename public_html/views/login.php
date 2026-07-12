@@ -26,7 +26,7 @@ ob_start();
   </div>
 <?php endif; ?>
 
-<form method="POST" action="/?action=login" novalidate>
+<form method="POST" action="index.php?action=login" novalidate>
 
   <div class="form-group">
     <label for="email">Adresse email</label>
@@ -38,6 +38,7 @@ ob_start();
   <div class="form-group">
     <label for="password" style="display:flex;justify-content:space-between;">
       <span>Mot de passe</span>
+      <a href="index.php?page=forgot-password" style="font-size:0.8rem;color:var(--primary);text-decoration:none;">Mot de passe oublié ?</a>
     </label>
     <div style="position:relative;">
       <input class="form-control" type="password" id="password" name="password"
@@ -57,7 +58,7 @@ ob_start();
 
 </form>
 
-<p class="auth-footer">Pas encore de compte ? <a href="./views/register.php">S'inscrire</a></p>
+<p class="auth-footer">Pas encore de compte ? <a href="index.php?page=register">S'inscrire</a></p>
 
 <?php clear_old(); ?>
 

@@ -1,0 +1,63 @@
+==================================================
+Date : 2026-07-12 01:09:23
+À : icksanmambote@gmail.com
+Objet : Activation de votre compte WorkFlow
+Message :
+Bonjour Icksan,
+
+Bienvenue sur WorkFlow ! Pour valider votre inscription, veuillez saisir le code de vérification suivant : 205508
+
+Ce code expirera dans 15 minutes.
+==================================================
+
+==================================================
+Date : 2026-07-12 01:09:56
+À : icksanmambote@gmail.com
+Objet : Verification de votre compte
+Message :
+Bonjour,
+
+Voici votre code de vérification OTP : 306437
+
+Ce code expirera dans 15 minutes.
+==================================================
+
+==================================================
+Date : 2026-07-12 01:21:15
+À : icksanmambote@gmail.com
+Objet : Verification de votre compte
+Message :
+Bonjour,
+
+Voici votre code de vérification OTP : 151122
+
+Ce code expirera dans 15 minutes.
+==================================================
+
+==================================================
+Date : 2026-07-12 02:11:19
+À : icksanmambote@gmail.com
+Objet : Activation de votre compte WorkFlow
+Message :
+Bonjour Icksan,
+
+Bienvenue sur WorkFlow ! Pour valider votre inscription, veuillez saisir le code de vérification suivant : 898399
+
+Ce code expirera dans 15 minutes.
+==================================================
+
+==================================================
+Date : 2026-07-12 02:14:30
+À : icksanmambote@gmail.com
+Objet : Récupération de mot de passe WorkFlow
+Message :
+Bonjour Icksan,
+
+Vous avez demandé la réinitialisation de votre mot de passe.
+Cliquez sur le lien ci-dessous pour saisir un nouveau mot de passe :
+
+http://localhost/workflow1/public_html/index.php?page=reset-password&token=38f103868cfab3e96b222f7d93118ef2f2a651058d064aa9702e6748811d6fff
+
+Ce lien expirera dans 30 minutes. Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail.
+==================================================
+

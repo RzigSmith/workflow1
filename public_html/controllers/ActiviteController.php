@@ -18,7 +18,7 @@ class ActiviteController {
                 
                 if (empty($user_id)) {
                     set_flash('error', 'Vous devez être connecté pour créer une activité.');
-                    header('Location: /?page=login');
+                    header('Location: index.php?page=login');
                     exit;
                 }
 
@@ -52,11 +52,11 @@ class ActiviteController {
                 $notification->creer();
 
                 set_flash('success', 'Activité créée avec succès.');
-                header('Location: /?page=dashboard');
+                header('Location: index.php?page=dashboard');
                 exit;
             } catch (Throwable $e) {
                 set_flash('error', 'Impossible de créer l\'activité.' . (defined('DEBUG') && DEBUG ? ' ' . $e->getMessage() : ''));
-                header('Location: /?page=dashboard');
+                header('Location: index.php?page=dashboard');
                 exit;
             }
         }
@@ -74,7 +74,7 @@ class ActiviteController {
 
                 if (!$id_activite || empty($user_id)) {
                     set_flash('error', 'Données invalides.');
-                    header('Location: /?page=dashboard');
+                    header('Location: index.php?page=dashboard');
                     exit;
                 }
 
@@ -83,7 +83,7 @@ class ActiviteController {
 
                 if (!$existante || $existante['id_user'] != $user_id) {
                     set_flash('error', 'Activité non trouvée ou non autorisée.');
-                    header('Location: /?page=dashboard');
+                    header('Location: index.php?page=dashboard');
                     exit;
                 }
 
@@ -101,11 +101,11 @@ class ActiviteController {
                 $activite->modifier($id_activite, $data);
 
                 set_flash('success', 'Activité modifiée avec succès.');
-                header('Location: /?page=dashboard');
+                header('Location: index.php?page=dashboard');
                 exit;
             } catch (Throwable $e) {
                 set_flash('error', 'Impossible de modifier l\'activité.' . (defined('DEBUG') && DEBUG ? ' ' . $e->getMessage() : ''));
-                header('Location: /?page=dashboard');
+                header('Location: index.php?page=dashboard');
                 exit;
             }
         }
@@ -123,7 +123,7 @@ class ActiviteController {
 
                 if (!$id_activite || empty($user_id)) {
                     set_flash('error', 'Données invalides.');
-                    header('Location: /?page=dashboard');
+                    header('Location: index.php?page=dashboard');
                     exit;
                 }
 
@@ -132,18 +132,18 @@ class ActiviteController {
 
                 if (!$existante || $existante['id_user'] != $user_id) {
                     set_flash('error', 'Activité non trouvée ou non autorisée.');
-                    header('Location: /?page=dashboard');
+                    header('Location: index.php?page=dashboard');
                     exit;
                 }
 
                 $activite->supprimer($id_activite, $user_id);
 
                 set_flash('success', 'Activité supprimée avec succès.');
-                header('Location: /?page=dashboard');
+                header('Location: index.php?page=dashboard');
                 exit;
             } catch (Throwable $e) {
                 set_flash('error', 'Impossible de supprimer l\'activité.' . (defined('DEBUG') && DEBUG ? ' ' . $e->getMessage() : ''));
-                header('Location: /?page=dashboard');
+                header('Location: index.php?page=dashboard');
                 exit;
             }
         }

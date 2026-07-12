@@ -21,13 +21,12 @@ class Activite extends Model {
             ':description' => $data['description'],
             ':priorite' => $data['priorite'],
             ':date_activite' => $data['date_activite'],
-            ':heure_debut' => $data['heure_debut'],
-            ':heure_fin' => $data['heure_fin'],
-            ':id_etat' => $data['id_etat'],
+            ':heure_debut' => $data['heure_debut'] ?: null,
+            ':heure_fin' => $data['heure_fin'] ?: null,
+            ':id_etat' => $data['id_etat'] ?? 1,
             ':id_user' => (int)$data['id_user']
         ]);
     }
-
 
     public function listerParUser($id_user) {
         $sql = "SELECT * FROM activite WHERE id_user = :id_user";
@@ -69,8 +68,8 @@ class Activite extends Model {
             ':description' => $data['description'],
             ':priorite' => $data['priorite'],
             ':date_activite' => $data['date_activite'],
-            ':heure_debut' => $data['heure_debut'],
-            ':heure_fin' => $data['heure_fin'],
+            ':heure_debut' => $data['heure_debut'] ?: null,
+            ':heure_fin' => $data['heure_fin'] ?: null,
             ':id_etat' => $data['id_etat'],
             ':id_activite' => $id_activite,
             ':id_user' => $data['id_user']
@@ -84,6 +83,22 @@ class Activite extends Model {
             ':id_activite' => $id_activite,
             ':id_user' => $id_user
         ]);
+    }
+
+    // ── GESTION ADMIN ─────────────────────────────────
+    public function listerToutes(): array {
+        $sql = "SELECT a.*, u.nom, u.prenom, u.username, e.libelle_etat
+                FROM {$this->table} a
+                JOIN utilisateur u ON a.id_user = u.id_user
+                JOIN etat e ON a.id_etat = e.id_etat
+                ORDER BY a.date_activite DESC";
+        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function supprimerParAdmin(int $id_activite): bool {
+        $sql = "DELETE FROM {$this->table} WHERE id_activite = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':id' => $id_activite]);
     }
 
     public function mettreAJourEtat($id_activite) {

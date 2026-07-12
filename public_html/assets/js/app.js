@@ -351,14 +351,14 @@
 
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = '/?action=supprimer-activite';
+            form.action = 'index.php?action=supprimer-activite';
             form.innerHTML = '<input type="hidden" name="id_activite" value="' + id + '">';
             document.body.appendChild(form);
             form.submit();
         },
 
         updateEtatAuto(id) {
-            fetch('/?action=api&endpoint=update-activite-etat', {
+            fetch('index.php?action=api&endpoint=update-activite-etat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id_activite: id })
