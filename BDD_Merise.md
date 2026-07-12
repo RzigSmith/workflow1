@@ -335,10 +335,3 @@ erDiagram
   ACTIVITE ||--o{ POST : "relie"
 ```
 
-### 8.3 Utilisation
-
-Copie le bloc Mermaid dans un visualiseur Markdown compatible Mermaid pour obtenir un diagramme graphique. Le schéma présente les entités et les relations principales du modèle WorkFlow.
-
----
-
-*Fichier généré pour la modélisation Merise de la base de données WorkFlow.*
