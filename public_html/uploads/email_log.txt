@@ -61,3 +61,27 @@ http://localhost/workflow1/public_html/index.php?page=reset-password&token=38f10
 Ce lien expirera dans 30 minutes. Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail.
 ==================================================
 
+==================================================
+Date : 2026-07-15 10:19:08
+À : leonelmassa@gmail.com
+Objet : Activation de votre compte WorkFlow
+Message :
+Bonjour massa,
+
+Bienvenue sur WorkFlow ! Pour valider votre inscription, veuillez saisir le code de vérification suivant : 173453
+
+Ce code expirera dans 15 minutes.
+==================================================
+
+==================================================
+Date : 2026-07-15 10:54:58
+À : icksanmambote@gmail.com
+Objet : Activation de votre compte WorkFlow
+Message :
+Bonjour Icksan,
+
+Bienvenue sur WorkFlow ! Pour valider votre inscription, veuillez saisir le code de vérification suivant : 665710
+
+Ce code expirera dans 15 minutes.
+==================================================
+
