@@ -7,8 +7,8 @@
 try {
     $conn = new PDO(
         "mysql:host=localhost;charset=utf8",
-        "root",
-        ""
+        "plaintes",
+        "plaintes"
     );
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
