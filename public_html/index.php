@@ -4,7 +4,7 @@
 define('DEBUG', true);
 
 session_start();
-
+require './vendor/autoload.php';    
 require_once './config/Database.php';
 require_once './core/Model.php';
 require_once './core/Flash.php';

@@ -6,3 +6,5 @@ start.sh
 
 # Auxly - AI Task Management (internal data)
 .auxly/
+public_html/vendor/
+public_html/composer.lock
