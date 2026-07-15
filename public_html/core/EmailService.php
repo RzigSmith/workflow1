@@ -9,7 +9,7 @@ class EmailService {
     //     return true;
     // }
 
-public static function send(string $to, string $subject, string $message): bool {
+public function send(string $to, string $subject, string $message): void {
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
     try {
         $mail->isSMTP();
@@ -78,7 +78,6 @@ public static function send(string $to, string $subject, string $message): bool 
     } catch (\PHPMailer\PHPMailer\Exception $e) {
         echo "Erreur lors de l\'envoi : {$mail->ErrorInfo}";
     }
-    return true;
 }
 
 }
