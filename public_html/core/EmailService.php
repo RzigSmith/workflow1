@@ -23,7 +23,7 @@ public static function send(string $to, string $subject, string $message): bool 
 
         // Expéditeur et destinataire
         $mail->setFrom('icksanmambote@gmail.com', 'Icksan');
-        $mail->addAddress($to);
+        $mail->addAddress($to, $name);
 
         // Contenu du message
         $mail->isHTML(true);
